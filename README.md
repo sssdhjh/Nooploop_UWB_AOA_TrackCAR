@@ -11,7 +11,29 @@
 
 - [Serial Library](https://github.com/nooploop-dev/serial.git)
 
+    使用前还需要下载官方的串口驱动,按下面的步骤编译:
+    cd ~/catkin_workspace/src
+    git clone https://github.com/nooploop-dev/serial.git
+    make
+    make test
+    sudo make install
+
+
     本程序和硬件设备之间采用串口通信，请先点击安装该串口通信库，注意，如果是第一次使用串口设备，通常需要开启串口操作权限，详情参考[Fix serial port permission denied errors on Linux](https://websistent.com/fix-serial-port-permission-denied-errors-linux/)
+	
+ 先连接上模块,查看USB设备:
+   
+    ls -l /dev/ttyUSB*
+	
+ 如检测到USB0,给串口权限(重启后权限无效,需重新执行):
+ 
+    sudo chmod 777 /dev/ttyUSB0
+   
+ 永久打开串口权限,重启后仍然生效:
+   
+    whoami  #查看自己的<username>用户名
+    sudo usermod -a -G dialout <username>  #将当前用户加入到dialout用户组，使其具有操作ttyUSB0的权限
+
 
 
 <!-- preparation in advance -->
