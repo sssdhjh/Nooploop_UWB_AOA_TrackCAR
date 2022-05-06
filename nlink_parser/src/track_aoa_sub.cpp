@@ -10,7 +10,7 @@ using namespace std;
 #define N 5
 float buffer[N];
 int  i = 0;
-float get_dis,get_angle,aver;
+float get_dis,get_angle,get_fp_rssi,aver;
 serial::Serial ser;
 std::string data, state, result;
 
@@ -79,7 +79,7 @@ void serial_port() //启动串口
 
 }
 
-void guess(float average,float angle)  //判断距离
+void guess(float average,float angle,float fp_rssi)  //判断距离
 {
 
     if(angle>=20)
@@ -105,35 +105,61 @@ void guess(float average,float angle)  //判断距离
         ser.flushInput();
     }
 
+  //先进行信号强度的判断，信号正常
+    if(fp_rssi>=-87.0)      //信号大于-87db
+    {
+        if(average>=2.0){
+            data="j";
+            state="前进";
+            serial_write(ser, data);
+            ser.flush(); 
+            ser.flushInput();
 
-    if(average>=2.0){
-        data="j";
-        state="前进";
-        serial_write(ser, data);
-        ser.flush(); 
-        ser.flushInput();
+            cout << " the data write to serial is : " <<  data.c_str() << endl;
+            cout << " the state of robot is :" << state.c_str() << endl<<endl;
+            ROS_INFO("均值滤波处理后的距离：%.2f\n",average);
+            ROS_INFO("------------------------------------------------");
+        }
+        
+       else if(average<0.3){
+            data="k";
+            state="后腿";
+            serial_write(ser, data);
+            ser.flush(); 
+            ser.flushInput();
 
-        cout << " the data write to serial is : " <<  data.c_str() << endl;
-        cout << " the state of robot is :" << state.c_str() << endl<<endl;
-        ROS_INFO("均值滤波处理后的距离：%.2f\n",average);
-        ROS_INFO("------------------------------------------------");
+            cout << " the data write to serial is : " <<  data.c_str() << endl;
+            cout << " the state of robot is :" << state.c_str() << endl<<endl;
+            ROS_INFO("均值滤波处理后的距离：%.2f\n",average);
+            ROS_INFO("------------------------------------------------");      
+        }
+
+        else{
+            data="s";
+            state="停止";
+            serial_write(ser, data);
+            ser.flush();  //等待串口数据发送结束
+            ser.flushInput();
+
+            cout << " the data write to serial is : " <<  data.c_str() << endl;
+            cout << " the state of robot is :" << state.c_str() << endl<<endl;
+            ROS_INFO("均值滤波处理后的距离：%.2f\n",average);
+            ROS_INFO("------------------------------------------------");
+         }
     }
+    
+    //信号衰弱
+    if(fp_rssi<=-87.0)  //信号小于-87db
+    {
+            data="s";
+            state="停止";
+            serial_write(ser, data);
+            ser.flush();  //等待串口数据发送结束
+            ser.flushInput();
 
-    else{
-        data="s";
-        state="停止";
-        serial_write(ser, data);
-        ser.flush();  //等待串口数据发送结束
-
-        ser.flushInput();
-
-        cout << " the data write to serial is : " <<  data.c_str() << endl;
-        cout << " the state of robot is :" << state.c_str() << endl<<endl;
-        ROS_INFO("均值滤波处理后的距离：%.2f\n",average);
-        ROS_INFO("------------------------------------------------");
-    }
-
-}
+            ROS_WARN("警告！信号源不在控制信号范围内！");
+            ROS_INFO("------------------------------------------------");
+      }
 
 void callback(const nlink_parser::LinktrackAoaNodeframe0::ConstPtr &msg)  //回调处理
 {
@@ -142,7 +168,7 @@ void callback(const nlink_parser::LinktrackAoaNodeframe0::ConstPtr &msg)  //回�
     if(msg->nodes.size()>0)
     {
         // cout<<"未处理的距离"<<msg->nodes[0].dis<<endl;
-        cout<<"size:"<<msg->nodes.size()<<endl;
+        //cout<<"size:"<<msg->nodes.size()<<endl;
 
         float d=msg->nodes[0].dis;
         get_angle=msg->nodes[0].angle;
@@ -152,8 +178,17 @@ void callback(const nlink_parser::LinktrackAoaNodeframe0::ConstPtr &msg)  //回�
 
 
         cout<<endl;
+        
+        /*
+            情况：当小车背对着标签时，当距离增大，小车会越来越远。
+            分析：因距离为正值，没有负值，很难利用距离的关系来判断车身的方向
+            解决：可以利用模块的信号强度 fp_rssi rx_rssi，当信号强度过低时停止
+        */
 
-        guess(get_dis,get_angle);
+        get_fp_rssi=msg->nodes[0].fp_rssi;
+        ROS_INFO("信号强度：%.2f",get_fp_rssi);
+
+        guess(get_dis,get_angle,get_fp_rssi);   //判断方位
         
     }
 
