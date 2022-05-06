@@ -9,6 +9,8 @@
   
     运行本程序需要ROS支持，如还未安装请先安装ROS。
 
+1、根据空循环的官网AOA的README.md文件，要实现标签与基站的通信，必须先下载串口通信库：
+
 - [Serial Library](https://github.com/nooploop-dev/serial.git)
 
     使用前还需要下载官方的串口驱动,按下面的步骤编译:
@@ -19,7 +21,7 @@
     sudo make install
 
 
-    本程序和硬件设备之间采用串口通信，请先点击安装该串口通信库，注意，如果是第一次使用串口设备，通常需要开启串口操作权限，详情参考[Fix serial port permission denied errors on Linux](https://websistent.com/fix-serial-port-permission-denied-errors-linux/)
+2、本程序和硬件设备之间采用串口通信，请先点击安装该串口通信库，注意，如果是第一次使用串口设备，通常需要开启串口操作权限，详情参考[Fix serial port permission denied errors on Linux](https://websistent.com/fix-serial-port-permission-denied-errors-linux/)
 	
  先连接上模块,查看USB设备:
    
@@ -37,9 +39,8 @@
 
 
 <!-- preparation in advance -->
-根据空循环的官网AOA的README.md文件，要实现标签与基站的通信，必须先下载串口通信库：
 
-按如下步骤克隆代码并编译
+3、按如下步骤克隆代码并编译
 
     cd catkin_workspace/src
     git clone --recursive https://github.com/nooploop-dev/nlink_parser.git 
@@ -50,7 +51,6 @@
 注意，每次打开新命令行窗口都需要执行 `source devel/setup.bash` 重新获取该ROS工作空间环境变量.
 
 <!-- LinkTrack AOA -->
-
 
    roscore
    catkin_make
@@ -90,10 +90,11 @@
 * **`nlink_linktrack_aoa_nodeframe0"`** ((const char [31]))
 
   获取标签与基站的实时参数,可通过串口通信发送出去
-
-
-   
-   
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
