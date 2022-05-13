@@ -160,6 +160,7 @@ void guess(float average,float angle,float fp_rssi)  //判断距离
             ROS_WARN("警告！信号源不在控制信号范围内！");
             ROS_INFO("------------------------------------------------");
       }
+}
 
 void callback(const nlink_parser::LinktrackAoaNodeframe0::ConstPtr &msg)  //回调处理
 {
