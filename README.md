@@ -43,10 +43,16 @@
 3、按如下步骤克隆代码并编译
 
     cd catkin_workspace/src
-    git clone --recursive https://github.com/nooploop-dev/nlink_parser.git 
+    git clone https://github.com/sssdhjh/Nooploop_UWB_AOA_TrackCAR.git
     cd ../
     catkin_make
     source devel/setup.bash
+    
+    #如果以上的git链接出现无法定位nlink_parser/LinktrackAoaNodeframe0文件的情况，请删除原来的驱动包，下载下方的官方驱动包，再如上重新编译
+    git clone --recursive https://github.com/nooploop-dev/nlink_parser.git 
+    <!--注意-->
+    如果你使用官网的驱动包并想使用本例程，需要重新配置．具体请参考＜＜护卫型机器人配置手册＞＞
+    
 
 注意，每次打开新命令行窗口都需要执行 `source devel/setup.bash` 重新获取该ROS工作空间环境变量.
 
