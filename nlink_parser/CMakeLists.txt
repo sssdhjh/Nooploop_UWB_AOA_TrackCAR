@@ -13,6 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
     std_msgs
     message_generation
     serial
+    sensor_msgs
+    message_filters
     )
 
 ## Generate messages in the 'msg' folder
