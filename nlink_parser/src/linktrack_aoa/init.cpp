@@ -108,6 +108,9 @@ namespace linktrack_aoa
       auto &msg_data = g_msg_aoa_nodeframe0;
       auto &msg_nodes = msg_data.nodes;
 
+        msg_data.header.stamp=ros::Time::now();
+        msg_data.header.frame_id = "aoa"; // 我这里选择aoa类型的坐标系
+      
       msg_data.role = data.role;
       msg_data.id = data.id;
       msg_data.local_time = data.local_time;
